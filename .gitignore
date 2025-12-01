@@ -1,0 +1,11 @@
+*/zig-out
+*/zig-cache/
+*/*.o
+
+*/target/
+*/Cago.lock
+
+*/go.sum
+
+.vscode
+.DS_Store
