@@ -3,7 +3,7 @@
 */*.o
 
 */target/
-*/Cago.lock
+*/Cargo.lock
 
 */go.sum
 

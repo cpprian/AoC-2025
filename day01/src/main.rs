@@ -25,12 +25,46 @@ fn solve_part1(input: &str) -> i32 {
                     i32::MIN..=BEFORE_START => {
                         curr += FULL_DIAL;
                     }
-                    FULL_DIAL..=i32::MAX => {
-                        curr -= FULL_DIAL;
-                    }
                     _ => {
                         // skip
                     }
+                }
+            }
+            return counter;
+        }
+    }
+}
+
+fn _check_is_too_behind(el: i32, rest: i32, curr: i32) -> bool {
+    el > 0 && rest > 0 && curr + rest >= FULL_DIAL
+}
+
+fn _check_is_too_ahead(el: i32, rest: i32, curr: i32) -> bool {
+    el < 0 && rest > 0 && curr > START_DIAL && rest >= curr
+}
+
+fn solve_part2(input: &str) -> i32 {
+    let Some(rotations) = parse(input) else {
+        return 0;
+    };
+
+    match rotations.len() {
+        1 => return 0,
+        _ => {
+            let mut counter = 0;
+            let mut curr = STARTING_POINT;
+            for el in rotations {
+                let step = el.abs();
+                let rest = step % FULL_DIAL;
+                counter += step / FULL_DIAL;
+                
+                if _check_is_too_behind(el, rest, curr) || _check_is_too_ahead(el, rest, curr) {
+                    counter += 1;
+                }
+
+                curr = (curr + el) % FULL_DIAL;
+                if curr < 0 {
+                    curr += FULL_DIAL;
                 }
             }
             return counter;
@@ -69,7 +103,8 @@ fn main() -> Result<()> {
     let input = fs::read_to_string(&filename)
         .map_err(|e| anyhow::anyhow!("Failed to read {}: {}", filename, e))?;
 
-    println!("Result part 1: {}", solve_part1(input.as_str()));
+    // println!("Result part 1: {}", solve_part1(input.as_str()));
+    println!("Result part 2: {}", solve_part2(input.as_str()));
     Ok(())
 }
 
@@ -91,5 +126,10 @@ L82";
     #[test]
     fn test_part1() {
         assert_eq!(solve_part1(INPUT), 3);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(solve_part2(INPUT), 6);
     }
 }
