@@ -20,5 +20,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Solution part 1: %d\n", day02.SolvePart1(input))
+	// fmt.Printf("Solution part 1: %d\n", day02.SolvePart1(input))
+	fmt.Printf("Solution part 2: %d\n", day02.SolvePart2(input))
 }

@@ -16,75 +16,97 @@ type Range struct {
 
 type Ranges []Range
 
-func isAllNine(n int) bool {
-	if n <= 0 {
-		return false
+func pow10(k int) int64 {
+	res := int64(1)
+	for i := 0; i < k; i++ {
+		res *= 10
 	}
-	for n > 0 {
-		if n % 10 != 9 {
-			return false
-		}
-		n /= 10
-	}
-	return true
+	return res
 }
 
 // too low 19605386012
-func (r Range) solveRange() int {
-	el := strconv.Itoa(int(r.left))
+func (r Range) solveRange1() int {
+	var sum int = 0
 
-	var counter int
-	for {
-		n, _ := strconv.Atoi(el)
-		if len(el) % 2 == 1 {
-			el += "0"
-			n = int(math.Pow(10, float64(len(el) - 1)))
-			if n > r.right {
-				break
-			}
-		}
+	left := r.left
+	right := r.right
 
-		p := int(math.Pow(10, float64(len(el)/2)))
-		n = n / p
-		nn := n * p + n
-		if nn > r.right {
-			break
+	maxLen := int(math.Log10(float64(right))) + 1
+
+	for k := 1; k * 2 <= maxLen; k++ {
+		p := pow10(k)            
+		d := p + 1             
+		minN := (left + int(d) - 1) / int(d) 
+		maxN := right / int(d)            
+
+		lowN := pow10(k-1)
+		highN := p - 1
+
+		if minN < int(lowN) {
+			minN = int(lowN)
 		}
-		if isAllNine(n) {
-			counter += nn
-			el += "00"
+		if maxN > int(highN) {
+			maxN = int(highN)
+		}
+		if minN > maxN {
 			continue
 		}
-		if nn < r.left {
-			n += 1
-			if n * p + n > r.right {
-				break
-			}
-		}
-		counter += nn
 
-		for {
-			n += 1
-			nn = n * p + n 
-			if nn > r.right {
-				break
-			}
-			counter += nn
-			if isAllNine(nn) {
-				break
-			}
-		}
-		el += "00"
+		count := maxN - minN + 1
+		sumN := (minN + maxN) * count / 2
+		sum += int(d) * sumN
 	}
 
-	fmt.Printf("Counter: %d\n", counter)
-	return counter
+	return sum
+}
+
+func (r Range) solveRange2() int {
+	var sum int = 0
+
+	left := r.left
+	right := r.right
+
+	maxLen := int(math.Log10(float64(right))) + 1
+
+	for k := 1; k * 2 <= maxLen; k++ {
+		p := pow10(k)            
+		d := p + 1             
+		minN := (left + int(d) - 1) / int(d) 
+		maxN := right / int(d)            
+
+		lowN := pow10(k-1)
+		highN := p - 1
+
+		if minN < int(lowN) {
+			minN = int(lowN)
+		}
+		if maxN > int(highN) {
+			maxN = int(highN)
+		}
+		if minN > maxN {
+			continue
+		}
+
+		count := maxN - minN + 1
+		sumN := (minN + maxN) * count / 2
+		sum += int(d) * sumN
+	}
+
+	return sum
 }
 
 func SolvePart1(rgs Ranges) int {
 	var solution int
 	for _, r := range rgs {
-		solution += r.solveRange()
+		solution += r.solveRange1()
+	}
+	return solution
+}
+
+func SolvePart2(rgs Ranges) int {
+	var solution int
+	for _, r := range rgs {
+		solution += r.solveRange2()
 	}
 	return solution
 }
