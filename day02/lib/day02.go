@@ -16,10 +16,21 @@ type Range struct {
 
 type Ranges []Range
 
-func (r Range) solveRange() int {
-	if r.left == 0 {
-		r.left = 1
+func isAllNine(n int) bool {
+	if n <= 0 {
+		return false
 	}
+	for n > 0 {
+		if n % 10 != 9 {
+			return false
+		}
+		n /= 10
+	}
+	return true
+}
+
+// too low 19605386012
+func (r Range) solveRange() int {
 	el := strconv.Itoa(int(r.left))
 
 	var counter int
@@ -34,26 +45,39 @@ func (r Range) solveRange() int {
 		}
 
 		p := int(math.Pow(10, float64(len(el)/2)))
-		n_l := n / p
-		n_r := n % p
-		if n_r == 0 || len(strconv.Itoa(n_r)) < len(strconv.Itoa(n_l)) {
-			n_r = n_l
-			if n_l * p + n_r > r.right {
+		n = n / p
+		nn := n * p + n
+		if nn > r.right {
+			break
+		}
+		if isAllNine(n) {
+			counter += nn
+			el += "00"
+			continue
+		}
+		if nn < r.left {
+			n += 1
+			if n * p + n > r.right {
 				break
 			}
 		}
+		counter += nn
 
-		if n_l != n_r {
-			n_r = n_l
-			if n_l * p + n_r > r.right {
-				
+		for {
+			n += 1
+			nn = n * p + n 
+			if nn > r.right {
+				break
 			}
-			counter += 1
+			counter += nn
+			if isAllNine(nn) {
+				break
+			}
 		}
-
-		fmt.Println(r.left, r.right, n, n_l, n_r, counter)
-		break
+		el += "00"
 	}
+
+	fmt.Printf("Counter: %d\n", counter)
 	return counter
 }
 
