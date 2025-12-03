@@ -5,8 +5,42 @@ use regex::Regex;
 
 const REGEX_EXPR: &str = r"\d";
 
+fn find_highest_joltage(data: Vec<i32>) -> i32 {
+    let n = data.len();
+
+    if n == 0 {
+        return 0;
+    } else if n == 1 {
+        return data[0];
+    } else if n == 2 {
+        return data[0] * 10 + data[1];
+    }
+    
+    let mut left = data[0];
+    let mut right = data[n - 1];
+    let mut left_idx = 0;
+    let mut right_idx = n - 1;
+    for idx in 1..(n-1) {
+        if left < data[idx] && idx < right_idx{
+            left = data[idx];
+            left_idx = idx + 1;
+        }
+
+        let ir = n - idx - 1;
+        if right < data[ir] && ir > left_idx {
+            right = data[ir];
+            right_idx = ir;
+        }
+    }
+    left * 10 + right
+}
+
 fn solve_part1(input: Vec<Vec<i32>>) -> i32 {
-    0
+    let mut sum: i32 = 0;
+    for idm in input {
+        sum += find_highest_joltage(idm);
+    }
+    sum
 }
 
 fn parse(input: &str) -> Result<Vec<Vec<i32>>, anyhow::Error> {
@@ -30,7 +64,6 @@ fn main() -> Result<()> {
 
     match parse(input.as_str()) {
         Ok(data) => {
-            println!("Data: {:?}", data);
             println!("Solution to part 1: {}", solve_part1(data));
         },
         Err(_) => {
