@@ -5,6 +5,10 @@ use regex::Regex;
 
 const REGEX_EXPR: &str = r"\d";
 
+fn sum_digits(left: i32, right: i32) -> i32 {
+    left * 10 + right
+}
+
 fn find_highest_joltage(data: Vec<i32>) -> i32 {
     let n = data.len();
 
@@ -15,24 +19,21 @@ fn find_highest_joltage(data: Vec<i32>) -> i32 {
     } else if n == 2 {
         return data[0] * 10 + data[1];
     }
-    
-    let mut left = data[0];
-    let mut right = data[n - 1];
-    let mut left_idx = 0;
-    let mut right_idx = n - 1;
-    for idx in 1..(n-1) {
-        if left < data[idx] && idx < right_idx{
-            left = data[idx];
-            left_idx = idx + 1;
-        }
 
-        let ir = n - idx - 1;
-        if right < data[ir] && ir > left_idx {
-            right = data[ir];
-            right_idx = ir;
+    let mut max = 0;
+    let mut best_left = vec![0; n];
+    best_left[0] = data[0];
+    for idx in 1..n {
+        best_left[idx] = best_left[idx - 1].max(data[idx]);
+    }
+    
+    for idx in 1..n {
+        let temp = sum_digits(best_left[idx - 1], data[idx]);
+        if temp > max {
+            max = temp;
         }
     }
-    left * 10 + right
+    max
 }
 
 fn solve_part1(input: Vec<Vec<i32>>) -> i32 {
@@ -65,7 +66,7 @@ fn main() -> Result<()> {
     match parse(input.as_str()) {
         Ok(data) => {
             println!("Solution to part 1: {}", solve_part1(data));
-        },
+        }
         Err(_) => {
             panic!("Should not throw any errors!");
         }
@@ -73,12 +74,11 @@ fn main() -> Result<()> {
     return Ok(());
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const INPUT: &str ="987654321111111
+    const INPUT: &str = "987654321111111
 811111111111119
 234234234234278
 818181911112111";
@@ -88,7 +88,7 @@ mod tests {
         match parse(INPUT) {
             Ok(data) => {
                 assert_eq!(solve_part1(data), 357);
-            },
+            }
             Err(_) => {
                 panic!("Should not throw any errors!");
             }
